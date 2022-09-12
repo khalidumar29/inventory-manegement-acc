@@ -1,17 +1,27 @@
 const mongoose = require("mongoose");
-const dotenv = require("dotenv").config();
-const colors = require("colors");
-const DBConnect = require("./utils/dbConnect");
-
+require("dotenv").config();
+const { connectToServer } = require("./utils/DBConnect");
 const app = require("./app");
-
-// database connection
-DBConnect();
+const errorHandler = require("./middleware/errorHandler");
+// routes
+const productRoutes = require("./routes/product.route");
 
 // server
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => {
-  console.log(`App is running on port ${port}`.yellow.bold);
-});
+// middleware
+app.use(errorHandler);
 
+// routes
+app.use("/api/v1/products", productRoutes);
+
+// database connection
+connectToServer((err) => {
+  if (!err) {
+    app.listen(port, () => {
+      console.log(port, "is running");
+    });
+  } else {
+    console.log(err);
+  }
+});
