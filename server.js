@@ -3,10 +3,7 @@ require("dotenv").config();
 const { connectToServer } = require("./utils/DBConnect");
 const app = require("./app");
 const errorHandler = require("./middleware/errorHandler");
-// routes
 const productRoutes = require("./routes/product.route");
-
-// server
 const port = process.env.PORT || 8080;
 
 // middleware
@@ -24,4 +21,7 @@ connectToServer((err) => {
   } else {
     console.log(err);
   }
+});
+mongoose.connect(process.env.DATABASE_LOCAL).then(() => {
+  console.log("connected to database");
 });
