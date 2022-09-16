@@ -2,12 +2,8 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const { connectToServer } = require("./utils/DBConnect");
 const app = require("./app");
-const errorHandler = require("./middleware/errorHandler");
 const productRoutes = require("./routes/product.route");
 const port = process.env.PORT || 8080;
-
-// middleware
-app.use(errorHandler);
 
 // routes
 app.use("/api/v1/products", productRoutes);
