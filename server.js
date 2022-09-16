@@ -2,11 +2,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const { connectToServer } = require("./utils/DBConnect");
 const app = require("./app");
-const productRoutes = require("./routes/product.route");
 const port = process.env.PORT || 8080;
-
-// routes
-app.use("/api/v1/product", productRoutes);
 
 // database connection
 connectToServer((err) => {
