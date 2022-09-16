@@ -1,12 +1,10 @@
-const Product = require("../models/product");
+const {
+  getProductService,
+  createProductService,
+} = require("../services/product.services");
 module.exports.getProduct = async (req, res, next) => {
   try {
-    // const product = await Product.where("name")
-    //   .equals(/\w/)
-    //   .where("quantity")
-    //   .lt(10)
-    //   .limit(2);
-    const product = await Product.find({});
+    const product = await getProductService();
     res.status(200).send(product);
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -16,9 +14,7 @@ module.exports.getProduct = async (req, res, next) => {
 
 module.exports.createProduct = async (req, res, next) => {
   try {
-    const product = await Product.create(req.body);
-    //const product = new Product(req.body);
-    //await product.save();
+    const product = await createProductService(req.body);
     product.logger();
     res.status(200).json({ success: true, data: product });
   } catch (error) {
