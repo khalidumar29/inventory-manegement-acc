@@ -6,7 +6,7 @@ const productRoutes = require("./routes/product.route");
 const port = process.env.PORT || 8080;
 
 // routes
-app.use("/api/v1/products", productRoutes);
+app.use("/api/v1/product", productRoutes);
 
 // database connection
 connectToServer((err) => {
