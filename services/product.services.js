@@ -14,3 +14,13 @@ module.exports.createProductService = async (data) => {
   //const product = new Product(req.body);
   //await product.save();
 };
+
+module.exports.updateProductService = async (id, data) => {
+  // return await Product.updateOne(
+  //   { _id: id },
+  //   { $set: data },
+  //   { runValidators: true }
+  // );
+  const product = await Product.findById(id);
+  return await product.set(data).save();
+};
