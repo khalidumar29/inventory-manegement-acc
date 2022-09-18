@@ -24,3 +24,15 @@ module.exports.updateProductService = async (id, data) => {
   const product = await Products.findById(id);
   return await product.set(data).save();
 };
+
+module.exports.bulkUpdateProductService = async (data) => {
+  // return await Products.updateMany({ _id: data.ids }, data.data, {
+  //   runValidators: true,
+  // });
+  const products = [];
+  data.ids.forEach((product) => {
+    products.push(Products.updateOne({ _id: product.id }, product.data));
+  });
+  const result = await Promise.all(products);
+  return result;
+};
