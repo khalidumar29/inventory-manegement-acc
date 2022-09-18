@@ -1,4 +1,4 @@
-const Product = require("../models/product");
+const Products = require("../models/product");
 
 module.exports.getProductService = async () => {
   // const product = await Product.where("name")
@@ -6,11 +6,11 @@ module.exports.getProductService = async () => {
   //   .where("quantity")
   //   .lt(10)
   //   .limit(2);
-  return await Product.find({});
+  return await Products.find({});
 };
 
 module.exports.createProductService = async (data) => {
-  return await Product.create(data);
+  return await Products.create(data);
   //const product = new Product(req.body);
   //await product.save();
 };
@@ -21,6 +21,6 @@ module.exports.updateProductService = async (id, data) => {
   //   { $set: data },
   //   { runValidators: true }
   // );
-  const product = await Product.findById(id);
+  const product = await Products.findById(id);
   return await product.set(data).save();
 };
