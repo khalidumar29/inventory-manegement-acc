@@ -1,12 +1,23 @@
 const Products = require("../models/product");
 
-module.exports.getProductService = async () => {
+module.exports.getProductService = async (query) => {
   // const product = await Product.where("name")
   //   .equals(/\w/)
   //   .where("quantity")
   //   .lt(10)
   //   .limit(2);
-  return await Products.find({});
+  const { status, limit, sort, page } = query;
+  let sorted, fields;
+  if (sort) {
+    sorted = sort.split(",").join(" ");
+  }
+  if (query.fields) {
+    fields = query.fields.split(",").join(" ");
+  }
+  return await Products.find({ status })
+    .sort(sorted)
+    .select(fields)
+    .limit(+limit);
 };
 
 module.exports.createProductService = async (data) => {

@@ -9,7 +9,7 @@ const {
 
 module.exports.getProduct = async (req, res, next) => {
   try {
-    const product = await getProductService();
+    const product = await getProductService(req.query);
     res.status(200).send(product);
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
