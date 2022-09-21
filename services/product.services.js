@@ -1,23 +1,32 @@
 const Products = require("../models/product");
 
-module.exports.getProductService = async (query) => {
+module.exports.getProductService = async (filters, queries) => {
   // const product = await Product.where("name")
   //   .equals(/\w/)
   //   .where("quantity")
   //   .lt(10)
   //   .limit(2);
-  const { status, limit, sort, page } = query;
-  let sorted, fields;
-  if (sort) {
-    sorted = sort.split(",").join(" ");
-  }
-  if (query.fields) {
-    fields = query.fields.split(",").join(" ");
-  }
-  return await Products.find({ status })
-    .sort(sorted)
-    .select(fields)
-    .limit(+limit);
+  // const { status, limit, sort, page } = query;
+  // let sorted, fields;
+  // if (sort) {
+  //   sorted = sort.split(",").join(" ");
+  // }
+  // if (query.fields) {
+  //   fields = query.fields.split(",").join(" ");
+  // }
+  // return await Products.find({ status })
+  //   .sort(sorted)
+  //   .select(fields)
+  //   .limit(+limit);
+  const products = await Products.find(filters)
+    .skip(queries.skip)
+    .limit(queries.limit)
+    .select(queries.fields)
+    .sort(queries.sortBy);
+
+  const total = await Product.countDocuments(filters);
+  const page = Math.ceil(totalProducts / queries.limit);
+  return { total, page, products };
 };
 
 module.exports.createProductService = async (data) => {
