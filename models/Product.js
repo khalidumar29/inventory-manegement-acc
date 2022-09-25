@@ -9,51 +9,49 @@ const productSchema = mongoose.Schema(
       unique: [true, "name must be unique"],
       minlength: [3, "name must be at least 3 characters"],
       maxlength: [100, "name is too large"],
+      lowercase: true,
     },
     description: { type: String, required: true },
-    price: {
-      type: Number,
-      required: true,
-      min: [0, "price can't be negetive"],
-    },
     unit: {
       type: String,
       required: true,
       enum: {
-        values: ["kg", "g", "l", "ml"],
-        message: "unit must be kg,g,l or ml",
+        values: ["kg", "g", "l", "ml", "bag"],
+        message: "unit must be kg,g,l,bag or ml",
       },
     },
-    quantity: {
-      type: Number,
+    imageURLs: {
+      type: [String],
       required: true,
-      min: [0, "quantity can't be negetive"],
       validate: {
-        validator: (value) => {
-          const isInteger = Number.isInteger(value);
-          isInteger ? true : false;
+        validator: (v) => {
+          if (Array.isArray(v)) {
+            return false;
+          }
+          let isValid = true;
+          v.forEach((url) => {
+            if (!validator.isURL(url)) {
+              isValid = false;
+            }
+          });
+          return isValid;
         },
+        message: "please provide valid image urls",
       },
-      message: "quantity must be an integer",
     },
-    status: {
+    category: {
       type: String,
       required: true,
-      enum: {
-        values: ["in-stock", "out-of-stock", "discountinued"],
-        message: "status can't be {VALUE}",
+    },
+    brand: {
+      type: String,
+      required: true,
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Brand",
+        required: true,
       },
     },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
-    // supplier: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Supplier",
-    // },
-    // categories: {
-    //   name: { type: String, required: true },
-    //   _id: mongoose.Schema.ObjectId,
-    // },
   },
   {
     timestamps: true,
