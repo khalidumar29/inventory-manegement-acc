@@ -1,45 +1,48 @@
-// const mongoose = require("mongoose");
-// const validator = require("validator");
-// const ObjectId = mongoose.Schema.Types.ObjectId;
+const mongoose = require("mongoose");
+const validator = require("validator");
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
-// // ------------------ Schema ------------------
-// const storeSchema = mongoose.Schema(
-//   {
-//     name: {
-//       type: String,
-//       required: [true, "Store Name is required"],
-//       maxlength: 100,
-//       unique: true,
-//       lowercase: true,
-//     },
-//     description: String,
-//     imageUrl: {
-//       type: String,
-//       validate: [validator.isURL, "Please provide a valid URL"],
-//     },
-//     products: [
-//       {
-//         type: ObjectId,
-//         ref: "Product",
-//       },
-//     ],
-//     status: {
-//       type: String,
-//       enum: ["active", "inactive"],
-//       default: "active",
-//     },
-//     createdAt: {
-//       type: Date,
-//       default: Date.now(),
-//     },
-//     updatedAt: {
-//       type: Date,
-//       default: Date.now(),
-//     },
-//   },
-//   { timestamps: true }
-// );
+// ------------------ Schema ------------------
+const storeSchema = mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Store Name is required"],
+      unique: true,
+      lowercase: true,
+      enum: {
+        values: [
+          "dhaka",
+          "chittagong",
+          "khulna",
+          "rajshahi",
+          "barisal",
+          "sylhet",
+          "rangpur",
+          "mymensingh",
+          "rangpur",
+        ],
+        message: "{VALUE}, Please provide a valid store name",
+      },
+    },
+    description: String,
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
+    manager: {
+      name: String,
+      contactNumber: String,
+      id: {
+        type: ObjectId,
+        ref: "User",
+      },
+    },
+  },
+  { timestamps: true }
+);
 
-// // ------------------ Model ------------------
-// const Store = mongoose.model("Store", storeSchema);
-// module.exports = Store;
+// ------------------ Model ------------------
+const Store = mongoose.model("Store", storeSchema);
+module.exports = Store;
