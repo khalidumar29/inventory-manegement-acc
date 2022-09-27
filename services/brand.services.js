@@ -5,9 +5,13 @@ module.exports.createBrandService = async (data) => {
 };
 
 module.exports.getBrandService = async () => {
-  return await Brand.find({}).select("-products -supplier");
+  return await Brand.find({}).select("-name -email -supplier");
 };
 
 module.exports.getBrandByIdService = async (id) => {
-  return await Brand.findById(id).select("-products -supplier");
+  return await Brand.findById(id);
+};
+
+module.exports.updateBrandService = async (id, data) => {
+  return await Brand.updateOne({ _id: id }, data, { runValidators: true });
 };
