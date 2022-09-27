@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 // ------------------ Schema ------------------
-
 const brandSchema = mongoose.Schema(
   {
     name: {
