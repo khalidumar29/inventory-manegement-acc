@@ -40,6 +40,14 @@ module.exports.createStore = async (req, res, next) => {
   }
 };
 
+module.exports.updateStoreById = async (req, res, next) => {
+  try {
+    const store = await updateStoreByIdService(req.params);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports.deleteStoreById = async (req, res, next) => {
   try {
     const store = await deleteStoreByIdService(req.params);

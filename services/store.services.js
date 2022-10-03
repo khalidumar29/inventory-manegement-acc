@@ -15,3 +15,7 @@ module.exports.createStoreService = async (data) => {
 module.exports.deleteStoreByIdService = async (id) => {
   return await Store.deleteOne({ _id: id });
 };
+
+module.exports.updateStoreByIdService = async (id) => {
+  return await Store.updateOne({ _id: id });
+};
