@@ -4,7 +4,7 @@ const { connectToServer } = require("./utils/DBConnect");
 const app = require("./app");
 const port = process.env.PORT || 8080;
 
-// database connection
+//database connection
 connectToServer((err) => {
   if (!err) {
     app.listen(port, () => {

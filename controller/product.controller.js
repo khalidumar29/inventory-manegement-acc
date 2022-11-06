@@ -112,3 +112,11 @@ module.exports.bulkDeleteProduct = async (req, res, next) => {
     next(error);
   }
 };
+
+module.exports.fileUpload = async (req, res) => {
+  try {
+    res.send(req.file);
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
