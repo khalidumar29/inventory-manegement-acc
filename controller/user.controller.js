@@ -1,60 +1,151 @@
 const {
   signUpService,
   findUserByEmailService,
+  findUserByConfirmationToken,
 } = require("../services/user.services");
+const { sendMailWithMailGun } = require("../utils/email");
 const { generateToken } = require("../utils/Token");
 
-module.exports.signUp = async (req, res) => {
+exports.signUp = async (req, res) => {
   try {
+    console.log(req.body);
     const user = await signUpService(req.body);
-    res
-      .status(200)
-      .json({ status: "success", message: "successfully signed up" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const token = user.generateConfirmationToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    const mailData = {
+      to: [user.email],
+      subject: "Verify your Account",
+      text: `Thank you for creating your account. Please confirm your account here: ${
+        req.protocol
+      }://${req.get("host")}${req.originalUrl}/confirmation/${token}`,
+    };
+
+    await sendMailWithMailGun(mailData);
+
+    res.status(200).json({
+      status: "success",
+      message: "Successfully signed up",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "fail",
+      error,
+    });
   }
 };
 
-module.exports.login = async (req, res) => {
+exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
-      res.status(401).json({ message: "Please provide email and password" });
-    }
-    const user = await findUserByEmailService(email);
-    if (!user) {
-      return res
-        .status(401)
-        .json({ status: "fail", error: "please provide your credentials" });
-    }
-    const isPasswordValid = user.comparePassword(password, user.password);
-    if (!isPasswordValid) {
-      return res
-        .status(401)
-        .json({ status: "fail", error: "user name and password didn't match" });
-    }
-    if (user.status !== "active") {
       return res.status(401).json({
         status: "fail",
-        error: "please confirm your email address",
+        error: "Please provide your credentials",
+      });
+    }
+
+    const user = await findUserByEmailService(email);
+
+    if (!user) {
+      return res.status(401).json({
+        status: "fail",
+        error: "No user found. Please create an account",
+      });
+    }
+
+    const isPasswordValid = user.comparePassword(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(403).json({
+        status: "fail",
+        error: "Password is not correct",
+      });
+    }
+
+    if (user.status != "active") {
+      return res.status(401).json({
+        status: "fail",
+        error: "Your account is not active yet.",
       });
     }
 
     const token = generateToken(user);
+
     const { password: pwd, ...others } = user.toObject();
+
     res.status(200).json({
       status: "success",
-      message: "succesfully logged in",
-      data: { user: others, token },
+      message: "Successfully logged in",
+      data: {
+        user: others,
+        token,
+      },
     });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  } catch (error) {
+    res.status(500).json({
+      status: "fail",
+      error,
+    });
   }
 };
 
-module.exports.getMe = async (req, res) => {
+exports.getMe = async (req, res) => {
   try {
     const user = await findUserByEmail(req.user?.email);
-    res.send(user);
-  } catch (error) {}
+
+    res.status(200).json({
+      status: "success",
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "fail",
+      error,
+    });
+  }
+};
+
+exports.confirmEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const user = await findUserByConfirmationToken(token);
+
+    if (!user) {
+      return res.status(403).json({
+        status: "fail",
+        error: "Invalid token",
+      });
+    }
+
+    const expired = new Date() > new Date(user.confirmationTokenExpires);
+
+    if (expired) {
+      return res.status(401).json({
+        status: "fail",
+        error: "Token expired",
+      });
+    }
+
+    user.status = "active";
+    user.confirmationToken = undefined;
+    user.confirmationTokenExpires = undefined;
+
+    user.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      status: "success",
+      message: "Successfully activated your account.",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "fail",
+      error,
+    });
+  }
 };
