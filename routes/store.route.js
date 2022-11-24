@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const storeController = require("../controller/store.controller");
+const verifyToken = require("../middleware/verifyToken");
 
 router
   .route("/")
@@ -9,7 +10,7 @@ router
 
 router
   .route("/:id")
-  .get(storeController.getStoreById)
-  .delete(storeController.deleteStoreById)
-  .patch(storeController.updateStoreById);
+  .get(verifyToken, storeController.getStoreById)
+  .delete(verifyToken, storeController.deleteStoreById)
+  .patch(verifyToken, storeController.updateStoreById);
 module.exports = router;
